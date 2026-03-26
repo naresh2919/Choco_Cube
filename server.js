@@ -41,6 +41,18 @@ app.post("/order", async (req, res) => {
   }
 });
 
+//Get method
+app.get("/orders", async (req, res) => {
+  try {
+    const orders = await ordersCollection.find().toArray();
+    res.status(200).json(orders);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed ❌" });
+  }
+});
+
+
 // ✅ Start Server
 app.listen(5000, () => {
   console.log("🚀 Server running on http://localhost:5000");
