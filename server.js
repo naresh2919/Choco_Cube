@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient } = require("mongodb");
 const dotenv = require("dotenv");
+const { ObjectId } = require("mongodb");
 
 dotenv.config();
 
@@ -53,14 +54,35 @@ app.get("/orders", async (req, res) => {
 });
 
 //Delete method
+
+
+// Delete method
 app.delete("/order/:id", async (req, res) => {
   try {
     const id = req.params.id;
-    await ordersCollection.deleteOne({ _id: id });
-    res.status(200).json({ message: "Order Deleted ✅" });
+
+    const result = await ordersCollection.deleteOne({
+      _id: new ObjectId(id)
+    });
+
+    if (result.deletedCount === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found ❌"
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Order Deleted ✅"
+    });
+
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed ❌" });
+    res.status(500).json({
+      success: false,
+      message: "Failed ❌"
+    });
   }
 });
 
